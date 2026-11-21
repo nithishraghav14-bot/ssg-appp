@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EasyPoll - Welcome Back</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="neu-login-body">
+
+  <!-- Ambient Neumorphic 3D shapes in background -->
+  <div class="neu-bg-shape neu-shape-1"></div>
+  <div class="neu-bg-shape neu-shape-2"></div>
+  <div class="neu-bg-shape neu-shape-3"></div>
+
+  <div class="neu-login-wrapper">
+    <div class="neu-login-card">
+      
+      <!-- Top Right Dark Mode Moon Toggle Button -->
+      <button type="button" class="neu-dark-toggle-btn" id="themeToggleBtn" title="Toggle Theme">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+
+      <!-- EasyPoll 3D Sleek Wave Logo Emblem (Replacing Old Logo) -->
+      <div class="neu-logo-container">
+        <div class="neu-logo-squircle">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="waveBlueDark" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1e40af" />
+                <stop offset="100%" stop-color="#0284c7" />
+              </linearGradient>
+              <linearGradient id="waveBlueMid" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3b82f6" />
+                <stop offset="100%" stop-color="#60a5fa" />
+              </linearGradient>
+              <linearGradient id="waveWhite" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="100%" stop-color="#dbeafe" />
+              </linearGradient>
+            </defs>
+            <!-- Bottom Dark Blue Ribbon -->
+            <path d="M18 42C16 35 22 28 28 26C32 24 35 27 34 32C33 38 24 45 18 42Z" fill="url(#waveBlueDark)" />
+            <path d="M18 42C24 46 32 38 34 32C35 28 32 24 28 26C22 28 16 35 18 42Z" fill="url(#waveBlueDark)" />
+            <!-- Middle Vibrant Blue Ribbon -->
+            <path d="M24 34C22 26 29 18 36 17C42 16 44 20 42 26C39 33 29 40 24 34Z" fill="url(#waveBlueMid)" />
+            <!-- Top Light Silver Ribbon -->
+            <path d="M30 25C28 18 35 11 42 10C48 9 50 14 47 20C44 26 35 30 30 25Z" fill="url(#waveWhite)" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Welcome Heading -->
+      <h1 class="neu-title-welcome" id="loginMainTitle">Welcome Back</h1>
+      <p class="neu-subtitle" id="loginSubTitle">Sign in to continue</p>
+
+      <!-- Role Switcher Segmented Tabs: Admin vs Participant -->
+      <div class="neu-role-switcher">
+        <button type="button" id="tabRoleAdmin" class="neu-role-tab active">
+          🛡️ Admin
+        </button>
+        <button type="button" id="tabRoleUser" class="neu-role-tab">
+          👤 Participant
+        </button>
+      </div>
+
+      <!-- ==============================================
+           1. ADMIN LOGIN FORM (No Google / No Facebook)
+           ============================================== -->
+      <div id="adminPanel">
+        <form id="adminLoginForm" autocomplete="off">
+          
+          <!-- Username or Email Field with User Icon -->
+          <div class="neu-input-field-group">
+            <svg class="neu-input-prefix-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <input 
+              type="text" 
+              id="usernameInput" 
+              name="username" 
+              placeholder="Username or Email" 
+              value="admin"
+              required
+            >
+          </div>
+
+          <!-- Password Field with Lock Icon and Eye Toggle -->
+          <div class="neu-input-field-group">
+            <svg class="neu-input-prefix-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <input 
+              type="password" 
+              id="passwordInput" 
+              name="password" 
+              placeholder="Password" 
+              value="password123"
+              required
+            >
+            <button type="button" class="neu-input-eye-btn" id="togglePasswordBtn" title="Toggle password visibility">
+              <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Remember Me & Forgot Password Row -->
+          <div class="neu-remember-row">
+            <label class="neu-checkbox-label">
+              <input type="checkbox" id="rememberMeCheck" class="neu-checkbox-input" checked style="display: none;">
+              <div class="neu-custom-checkbox">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" style="display: block;">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <span>Remember Me</span>
+            </label>
+
+            <a href="#" class="neu-link-forgot" id="btnFillDemoCreds" title="Fill Demo Admin Credentials">
+              Forgot Password?
+            </a>
+          </div>
+
+          <!-- Glowing Blue Pill Login Button with Arrow -->
+          <button type="submit" class="neu-btn-login-blue" id="loginSubmitBtn">
+            <span>Login</span>
+            <div class="neu-btn-arrow-circle">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </button>
+
+          <!-- Edit Username & Password Link -->
+          <div style="text-align: center; margin-top: 14px;">
+            <a href="#" id="btnOpenChangeCredsLogin" style="font-size: 0.82rem; font-weight: 700; color: #2563eb; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span>Change Username / Password</span>
+            </a>
+          </div>
+        </form>
+
+        <div style="text-align: center; margin-top: 18px; font-size: 0.88rem; color: #64748b;">
+          <span>Audience member? </span>
+          <a href="#" id="linkSwitchToUser" style="color: var(--primary); font-weight: 700; text-decoration: underline;">
+            Join live poll as participant
+          </a>
+        </div>
+      </div>
+
+      <!-- ==============================================
+           2. PARTICIPANT / USER JOIN FORM (100% Anonymous)
+           ============================================== -->
+      <div id="userPanel" style="display: none;">
+        <form id="userJoinForm">
+          <div class="neu-input-field-group">
+            <svg class="neu-input-prefix-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10"></line>
+              <line x1="12" y1="20" x2="12" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+            <select id="selectActivePoll" style="cursor: pointer;">
+              <!-- Populated dynamically via login.js -->
+            </select>
+          </div>
+
+          <div class="neu-input-field-group">
+            <svg class="neu-input-prefix-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <input 
+              type="text" 
+              id="participantAlias" 
+              placeholder="Nickname (Optional)" 
+              value="Anonymous Participant"
+            >
+          </div>
+
+          <div style="margin-bottom: 20px; font-size: 0.82rem; color: #059669; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span>Strict Unlinkable Anonymity Guaranteed</span>
+          </div>
+
+          <button type="submit" class="neu-btn-login-blue" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 10px 25px -4px rgba(16, 185, 129, 0.5);">
+            <span>Enter Live Session</span>
+            <div class="neu-btn-arrow-circle">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 18px; font-size: 0.88rem; color: #64748b;">
+          <span>Need Admin access? </span>
+          <a href="#" id="linkSwitchToAdmin" style="color: var(--primary); font-weight: 700; text-decoration: underline;">
+            Sign in as Admin
+          </a>
+        </div>
+      </div>
+
+      <!-- Clean EasyPoll Tagline -->
+      <div class="neu-footer-tagline">
+        EASYPOLL &bull; LIVE Q&amp;A &bull; INSTANT POLLING
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal: Change Username & Password (with old password) on Login Screen -->
+  <div class="modal-backdrop" id="loginChangeCredsModal">
+    <div class="modal-card" style="max-width: 460px; padding: 24px; border-radius: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0;">Change Admin Credentials</h3>
+        <button type="button" id="btnCloseLoginCredsModal" style="background: none; border: none; font-size: 1.2rem; color: #94a3b8; cursor: pointer;">✕</button>
+      </div>
+
+      <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 18px; line-height: 1.45;">
+        You can edit the admin username and password. <strong>Your old password is required</strong> to authorize the change.
+      </p>
+
+      <form id="loginUpdateCredsForm" autocomplete="off">
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 4px;">Current / Old Password <span style="color: #ef4444;">*</span></label>
+          <div style="position: relative;">
+            <input type="password" id="loginOldPassInput" class="title-input-field" style="width: 100%; padding-right: 36px;" placeholder="Enter current password" required>
+            <button type="button" onclick="window.toggleLoginFieldPass('loginOldPassInput')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 0.95rem;">👁️</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 4px;">New Username</label>
+          <input type="text" id="loginNewUserInput" class="title-input-field" style="width: 100%;" placeholder="Enter new username" required>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 4px;">New Password (min 6 chars)</label>
+          <div style="position: relative;">
+            <input type="password" id="loginNewPassInput" class="title-input-field" style="width: 100%; padding-right: 36px;" placeholder="Enter new password" minlength="6" required>
+            <button type="button" onclick="window.toggleLoginFieldPass('loginNewPassInput')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 0.95rem;">👁️</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 18px;">
+          <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 4px;">Confirm New Password</label>
+          <div style="position: relative;">
+            <input type="password" id="loginConfirmPassInput" class="title-input-field" style="width: 100%; padding-right: 36px;" placeholder="Confirm new password" minlength="6" required>
+            <button type="button" onclick="window.toggleLoginFieldPass('loginConfirmPassInput')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 0.95rem;">👁️</button>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-cancel" id="btnCancelLoginCreds">Cancel</button>
+          <button type="submit" class="btn-publish-purple" id="btnSubmitLoginCreds">Update Credentials</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toastContainer"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

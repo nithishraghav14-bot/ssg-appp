@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EasyPoll Host Portal - Live Polling & Q&A</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/qrcode.min.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Left Navy Sidebar -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+            <line x1="4" y1="22" x2="4" y2="15"></line>
+          </svg>
+        </div>
+        <div class="brand-name-text">EasyPoll</div>
+        <button class="sidebar-close-btn" id="btnCloseSidebar" aria-label="Close navigation menu" title="Close Sidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li>
+          <a href="#" class="menu-item active" id="navHome">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" id="navPolls">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span>Quizzes & Polls</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" id="navResults">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <line x1="18" y1="20" x2="18" y2="10"></line>
+              <line x1="12" y1="20" x2="12" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+            <span>Results & Analytics</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" id="navAnalytics">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+              <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+            </svg>
+            <span>Descriptive Q&A</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" id="navSettings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Settings</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <!-- Switch to Participant View Button -->
+        <a href="index.html" class="menu-item" style="color: #6ee7b7; background: rgba(16, 185, 129, 0.1); margin-bottom: 8px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Participant View</span>
+        </a>
+
+        <div class="sidebar-db-status" id="dbStatusBadge">
+          <span><span class="db-status-dot local" id="dbDot"></span> <span id="dbModeText">Local Mode</span></span>
+          <button class="btn-fill-demo" id="btnOpenDbConfig" title="Configure Supabase">Config</button>
+        </div>
+        <a href="#" class="menu-item" id="btnLogout" style="color: #f87171;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Log Out</span>
+        </a>
+      </div>
+    </aside>
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" title="Click to close sidebar"></div>
+
+    <!-- Main Content Body -->
+    <main class="app-main">
+      <header class="top-navbar">
+        <div class="navbar-left-cluster">
+          <button class="mobile-sidebar-toggle" id="btnToggleSidebar" aria-label="Toggle navigation menu" title="Open Menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="search-container">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" class="search-input" id="globalSearchInput" placeholder="Search by title, subject or tag...">
+          </div>
+        </div>
+
+        <div class="navbar-right">
+          <a href="index.html" class="btn-action-outline" style="text-decoration: none; font-size: 0.85rem; padding: 7px 14px; border-radius: var(--radius-full);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            <span>Participant Mode</span>
+          </a>
+
+          <button class="nav-icon-btn" title="Notifications">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="nav-badge-dot"></span>
+          </button>
+
+          <button class="btn-action-outline" id="btnOpenAccountSettings" style="font-size: 0.82rem; padding: 6px 12px; border-radius: var(--radius-full); cursor: pointer;" title="Edit Admin Username & Password">
+            ⚙️ Account
+          </button>
+
+          <div class="user-avatar-pill" id="userAvatarPill" title="Admin Profile (Click to change username/password)" style="cursor: pointer;">EP</div>
+        </div>
+      </header>
+
+      <div class="content-wrapper">
+
+        <!-- ===================================================================
+             VIEW 1: EXECUTIVE DASHBOARD & REAL-TIME ANALYTICS
+             Inspired by Reference Interface (LicenScale Monitor Reference)
+             200 Participants Capacity & Real-Time Q&A
+             =================================================================== -->
+        <section id="viewDashboard" class="view-panel">
+          
+          <!-- Top Executive Header & Toolbar -->
+          <div class="analytics-top-header" style="margin-bottom: 20px;">
+            <div class="analytics-title-group">
+              <div class="page-title-bar" style="margin-bottom: 0;">
+                <div class="title-accent-bar"></div>
+                <h1 class="page-title-text" style="font-size: 1.5rem; margin: 0;">Dashboard</h1>
+              </div>
+              <span class="live-pulse-badge" id="dashLiveStatusBadge">
+                <span class="pulse-dot"></span> Live &bull; 200 Members Capacity
+              </span>
+            </div>
+
+            <div class="analytics-action-buttons">
+              <button class="btn-publish-purple" id="btnDashAskOnTheSpot" style="padding: 9px 18px; font-size: 0.88rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                ⚡ Ask Question On The Spot
+              </button>
+              <button class="btn-share-qr" id="btnDashShareQR" style="padding: 9px 16px; font-size: 0.88rem;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>Share QR</span>
+              </button>
+              <button class="btn-action-outline" id="btnDashSimulateVote" title="Simulate 1 participant vote">
+                ⚡ Sim 1 Vote
+              </button>
+              <button class="btn-action-outline" id="btnDashSimulateBatch" title="Simulate 25 participants voting">
+                👥 Sim 25 Members
+              </button>
+
+              <div class="action-create-wrapper">
+                <button class="btn-create-primary" id="btnCreateDropdown" style="padding: 9px 18px; font-size: 0.88rem;">
+                  <span>+ Create</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+                <div class="create-dropdown-menu" id="createMenu">
+                  <button class="create-drop-item" id="btnOpenCreateQuiz">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    <span>Create Quiz</span>
+                  </button>
+                  <button class="create-drop-item" id="btnOpenCreatePoll">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="18" y1="20" x2="18" y2="10"></line>
+                      <line x1="12" y1="20" x2="12" y2="4"></line>
+                      <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    <span>Create Poll</span>
+                  </button>
+                  <button class="create-drop-item" id="btnOpenCreateDescriptive">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span>Create Descriptive Q&amp;A</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SIMPLE & CLEAN EXECUTIVE KPI ROW (5 Essential Metrics) -->
+          <div class="simple-kpi-grid">
+            <!-- 1. Audience Capacity -->
+            <div class="exec-card">
+              <div class="exec-card-top">
+                <span class="exec-dot blue"></span>
+                <span>Audience Capacity</span>
+              </div>
+              <div class="exec-card-value" id="execCapacityCount">200</div>
+              <div class="exec-card-bottom">
+                <span>Max Active</span>
+                <span class="exec-badge-pill info">200 Max</span>
+              </div>
+            </div>
+
+            <!-- 2. Members Responded -->
+            <div class="exec-card">
+              <div class="exec-card-top">
+                <span class="exec-dot green"></span>
+                <span>Members Responded</span>
+              </div>
+              <div class="exec-card-value" id="execRespondedCount">0</div>
+              <div class="exec-card-bottom">
+                <span id="execRespondedSub">0% Turnout</span>
+                <span class="exec-badge-pill success" id="execTurnoutBadge">0 / 200</span>
+              </div>
+            </div>
+
+            <!-- 3. Live Questions -->
+            <div class="exec-card">
+              <div class="exec-card-top">
+                <span class="exec-dot amber"></span>
+                <span>Active Questions</span>
+              </div>
+              <div class="exec-card-value" id="execQuestionsCount">0</div>
+              <div class="exec-card-bottom">
+                <span>MCQ &amp; Descriptive</span>
+                <span class="exec-badge-pill warning">Live</span>
+              </div>
+            </div>
+
+            <!-- 4. Descriptive Answers -->
+            <div class="exec-card">
+              <div class="exec-card-top">
+                <span class="exec-dot purple"></span>
+                <span>Descriptive Answers</span>
+              </div>
+              <div class="exec-card-value" id="execDescriptiveCount">0</div>
+              <div class="exec-card-bottom">
+                <span>Written Essays</span>
+                <span class="exec-badge-pill info">Q&amp;A</span>
+              </div>
+            </div>
+
+            <!-- 5. Total Submissions -->
+            <div class="exec-card">
+              <div class="exec-card-top">
+                <span class="exec-dot navy"></span>
+                <span>Total Submissions</span>
+              </div>
+              <div class="exec-card-value" id="execTotalSubmissionsCount">0</div>
+              <div class="exec-card-bottom">
+                <span>Across All Questions</span>
+                <span class="exec-badge-pill success">Recorded</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 3: SIDE-BY-SIDE ANALYTICS CHARTS (License Trends & License Status style) -->
+          <div class="exec-charts-grid">
+            
+            <!-- Left Chart: Participation Trends Bar Chart -->
+            <div class="exec-chart-card">
+              <div class="exec-chart-header">
+                <div>
+                  <div class="exec-chart-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+                      <line x1="18" y1="20" x2="18" y2="10"></line>
+                      <line x1="12" y1="20" x2="12" y2="4"></line>
+                      <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    <span>Participation Trends</span>
+                  </div>
+                  <div class="exec-chart-subtitle">Response volume across questions vs 200 member capacity</div>
+                </div>
+                <div class="exec-chart-legend">
+                  <div class="exec-legend-item">
+                    <span class="exec-legend-color" style="background: #1e3a8a;"></span>
+                    <span>Responded</span>
+                  </div>
+                  <div class="exec-legend-item">
+                    <span class="exec-legend-color" style="background: #ef4444;"></span>
+                    <span>200 Capacity</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bar Chart Canvas SVG Container -->
+              <div class="exec-chart-canvas-holder" id="dashTrendsChart"></div>
+            </div>
+
+            <!-- Right Chart: Audience Participation Status Donut Chart -->
+            <div class="exec-chart-card">
+              <div class="exec-chart-header">
+                <div>
+                  <div class="exec-chart-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                      <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                      <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                    </svg>
+                    <span>Audience Participation Status</span>
+                  </div>
+                  <div class="exec-chart-subtitle">Overall distribution of 200 participants</div>
+                </div>
+              </div>
+
+              <!-- Donut Chart & Legend Holder -->
+              <div class="exec-donut-container" id="dashStatusDonut"></div>
+            </div>
+
+          </div>
+
+          <!-- SECTION 4: QUIZZES & POLLS MANAGEMENT TABLE -->
+          <div class="exec-section-header" id="quizzesAndPollsSection" style="margin-top: 10px; scroll-margin-top: 85px;">
+            <span>Live Sessions &amp; Quizzes</span>
+            <span class="exec-section-sub">Create, broadcast on the spot, and evaluate</span>
+          </div>
+
+          <div class="filter-tabs-row">
+            <button class="filter-pill active" data-filter="all" id="tabAll">All</button>
+            <button class="filter-pill" data-filter="quiz" id="tabQuizzes">Quizzes</button>
+            <button class="filter-pill" data-filter="poll" id="tabPolls">Polls</button>
+          </div>
+
+          <div class="table-card">
+            <table class="polls-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Type</th>
+                  <th>Questions</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="pollsTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+
+        <!-- ===================================================================
+             VIEW 2: CREATE POLL VIEW
+             =================================================================== -->
+        <section id="viewCreator" class="view-panel" style="display: none;">
+          <div class="breadcrumb-nav">
+            <a href="#" id="breadcrumbBackToPolls">Polls</a>
+            <span>&gt;</span>
+            <span id="breadcrumbCurrentAction">Create Live Session</span>
+          </div>
+
+          <div class="creator-banner-card">
+            <div class="creator-banner-content">
+              <div class="creator-banner-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="20" x2="18" y2="10"></line>
+                  <line x1="12" y1="20" x2="12" y2="4"></line>
+                  <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+              </div>
+              <div class="creator-banner-text">
+                <h2 id="creatorBannerTitle">Create Live Poll</h2>
+                <p id="creatorBannerDesc">Compose questions (Multiple Choice or Descriptive Q&amp;A) on the spot</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="creator-layout">
+            <div class="creator-form-col">
+              <div class="form-card">
+                <div class="title-input-row">
+                  <div class="title-icon-tag">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                      <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                    </svg>
+                  </div>
+                  <input type="text" id="pollTitleInput" class="title-input-field" placeholder="Enter session title on the spot..." value="" required>
+                </div>
+              </div>
+
+              <div id="questionsContainer" class="questions-container-list"></div>
+
+              <div class="creator-bottom-bar">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                  <button type="button" class="btn-add-question-white" id="btnAddQuestion">
+                    <span>+ Add Multiple Choice (MCQ)</span>
+                  </button>
+                  <button type="button" class="btn-add-question-white" id="btnAddDescriptiveQuestion" style="background: #ecfdf5; border-color: #a7f3d0; color: #047857;">
+                    <span>📝 + Add Descriptive Question</span>
+                  </button>
+                </div>
+
+                <div class="creator-submit-actions">
+                  <button type="button" class="btn-cancel" id="btnCancelCreator">Cancel</button>
+                  <button type="button" class="btn-publish-purple" id="btnPublishPoll">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Publish & Go Live</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="creator-nav-col">
+              <div class="summary-nav-card">
+                <div class="summary-nav-header">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                  <span id="navQuestionCountTitle">Questions</span>
+                </div>
+                <div class="summary-nav-list" id="questionsSummaryList"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ===================================================================
+             VIEW 3: ENHANCED ANALYTICS & DESCRIPTIVE Q&A DASHBOARD
+             200 Participants Capacity & Real-Time Insights
+             =================================================================== -->
+        <section id="viewEvaluation" class="view-panel" style="display: none;">
+          
+          <!-- Top Control Header -->
+          <div class="analytics-top-header">
+            <div class="analytics-title-group">
+              <div class="btn-back-link" id="btnBackFromAnalytics">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Back</span>
+              </div>
+              <h2 id="evalPollTitle" style="font-size: 1.4rem; font-weight: 800;">Live Session</h2>
+              <span class="live-pulse-badge" id="evalStatusBadge">
+                <span class="pulse-dot"></span> Live - Accepting Responses
+              </span>
+            </div>
+
+            <div class="analytics-action-buttons">
+              <!-- On-the-spot question button -->
+              <button class="btn-publish-purple" id="btnAskOnTheSpot" style="padding: 9px 18px; font-size: 0.9rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                ⚡ Ask Question On The Spot
+              </button>
+              <!-- Simulate 1 vote or batch votes up to 200 -->
+              <button class="btn-action-outline" id="btnSimulateVote" title="Simulate 1 live audience response">
+                ⚡ Simulate 1 Vote
+              </button>
+              <button class="btn-action-outline" id="btnSimulateBatch" title="Simulate 25 audience members voting">
+                👥 Simulate 25 Members
+              </button>
+              <button class="btn-action-outline" id="btnExportCSV">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Export CSV</span>
+              </button>
+              <button class="btn-share-qr" id="btnOpenShareQR">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>Share QR & Link</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ENHANCED 200-MEMBER ANALYTICS KPI BAR -->
+          <div class="analytics-kpi-grid">
+            <!-- Capacity KPI -->
+            <div class="analytics-kpi-card">
+              <div class="kpi-icon-circle blue">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              <div class="kpi-details-col">
+                <span class="kpi-details-label">Audience Capacity</span>
+                <span class="kpi-details-val" id="kpiCapacityVal">200</span>
+                <span class="kpi-details-sub">Max active members</span>
+              </div>
+            </div>
+
+            <!-- Active Respondents KPI -->
+            <div class="analytics-kpi-card">
+              <div class="kpi-icon-circle green">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </div>
+              <div class="kpi-details-col">
+                <span class="kpi-details-label">Members Responded</span>
+                <span class="kpi-details-val" id="kpiRespondedVal">0</span>
+                <span class="kpi-details-sub" id="kpiRespondedSub">0 / 200 active</span>
+              </div>
+            </div>
+
+            <!-- Turnout Percentage KPI -->
+            <div class="analytics-kpi-card">
+              <div class="kpi-icon-circle purple">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                  <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                </svg>
+              </div>
+              <div class="kpi-details-col">
+                <span class="kpi-details-label">Turnout Rate</span>
+                <span class="kpi-details-val" id="kpiTurnoutRateVal">0%</span>
+                <span class="kpi-details-sub">Based on 200 capacity</span>
+              </div>
+            </div>
+
+            <!-- Total Answers Submitted -->
+            <div class="analytics-kpi-card">
+              <div class="kpi-icon-circle amber">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                  <line x1="6" y1="8" x2="10" y2="8"></line>
+                  <line x1="6" y1="12" x2="18" y2="12"></line>
+                  <line x1="6" y1="16" x2="14" y2="16"></line>
+                </svg>
+              </div>
+              <div class="kpi-details-col">
+                <span class="kpi-details-label">Total Submissions</span>
+                <span class="kpi-details-val" id="kpiTotalAnswersVal">0</span>
+                <span class="kpi-details-sub">Across all questions</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TWO-COLUMN ANALYTICS & DESCRIPTIVE Q&A LAYOUT -->
+          <!-- SECTION: SIDE-BY-SIDE ANALYTICS CHARTS (License Trends & License Status style) -->
+          <div class="exec-charts-grid" style="margin-bottom: 24px;">
+            <!-- Left: Participation Trends Bar Chart -->
+            <div class="exec-chart-card">
+              <div class="exec-chart-header">
+                <div>
+                  <div class="exec-chart-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+                      <line x1="18" y1="20" x2="18" y2="10"></line>
+                      <line x1="12" y1="20" x2="12" y2="4"></line>
+                      <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    <span>Question Participation Trends</span>
+                  </div>
+                  <div class="exec-chart-subtitle">Responses per question vs 200 member capacity</div>
+                </div>
+                <div class="exec-chart-legend">
+                  <div class="exec-legend-item">
+                    <span class="exec-legend-color" style="background: #1e3a8a;"></span>
+                    <span>Responded</span>
+                  </div>
+                  <div class="exec-legend-item">
+                    <span class="exec-legend-color" style="background: #ef4444;"></span>
+                    <span>200 Capacity</span>
+                  </div>
+                </div>
+              </div>
+              <div class="exec-chart-canvas-holder" id="evalTrendsChart"></div>
+            </div>
+
+            <!-- Right: Audience Participation Status Donut Chart -->
+            <div class="exec-chart-card">
+              <div class="exec-chart-header">
+                <div>
+                  <div class="exec-chart-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                      <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                      <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                    </svg>
+                    <span>Audience Participation Status</span>
+                  </div>
+                  <div class="exec-chart-subtitle">Overall distribution of 200 participants</div>
+                </div>
+              </div>
+              <div class="exec-donut-container" id="evalStatusDonut"></div>
+            </div>
+          </div>
+
+          <div class="evaluation-layout">
+            <!-- Left Column: MCQ Results & Visual Rates -->
+            <div class="eval-mcq-col" id="evalMcqContainer"></div>
+
+            <!-- Right Column: Descriptive Q&A Explorer -->
+            <div class="eval-paragraph-col" id="descriptiveQaSection" style="scroll-margin-top: 85px;">
+              <div class="paragraph-feed-card">
+                <div class="feed-header">
+                  <div class="feed-header-left">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <h3 class="feed-header-title">Descriptive Q&amp;A Responses</h3>
+                    <span class="feed-count-badge" id="evalParagraphCountBadge">0 answers</span>
+                  </div>
+                </div>
+
+                <!-- Dynamic Keyword / Key Themes Cloud -->
+                <div class="theme-cloud-box" id="themeCloudBox" style="display: none;">
+                  <div class="theme-cloud-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span>Audience Key Themes &amp; Keywords</span>
+                  </div>
+                  <div class="theme-tags-wrap" id="themeTagsContainer"></div>
+                </div>
+
+                <!-- Descriptive Search Filter -->
+                <div style="position: relative;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 12px; top: 12px; color: var(--text-light); pointer-events: none;">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="descriptiveSearchInput" class="response-search-input" placeholder="Search descriptive answers...">
+                </div>
+
+                <!-- Scrollable Stream of Descriptive Answer Cards -->
+                <div class="feed-items-scrollable" id="evalParagraphScrollable"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ===================================================================
+       MODAL: ASK QUESTION & OPTIONS ON THE SPOT
+       Supports Multiple Choice & Descriptive Q&A Model
+       =================================================================== -->
+  <div class="modal-backdrop" id="onTheSpotModal">
+    <div class="modal-card" style="max-width: 540px;">
+      <div class="modal-header">
+        <h3 class="modal-title">⚡ Give Question & Options On The Spot</h3>
+        <button class="modal-close-btn" id="btnCloseOnTheSpotModal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+          Type your question live. Broadcast to up to <strong>200 audience members</strong> in real-time.
+        </p>
+
+        <!-- Question Type Selection -->
+        <div class="form-group-custom">
+          <label style="color: var(--text-main); font-weight: 700; font-size: 0.88rem; margin-bottom: 6px; display: block;">Question Model</label>
+          <select id="spotQuestionType" class="title-input-field" style="width: 100%; margin-bottom: 14px;">
+            <option value="mcq">Multiple Choice (Host enters options on the spot)</option>
+            <option value="paragraph">Descriptive Q&amp;A (Audience gives comprehensive written answer)</option>
+          </select>
+        </div>
+
+        <!-- Question Prompt -->
+        <div class="form-group-custom">
+          <label style="color: var(--text-main); font-weight: 700; font-size: 0.88rem; margin-bottom: 6px; display: block;">Question Text</label>
+          <input type="text" id="spotQuestionText" class="title-input-field" style="width: 100%; margin-bottom: 14px;" placeholder="Type your question on the spot here..." required autofocus>
+        </div>
+
+        <!-- MCQ Options Section -->
+        <div id="spotMcqOptionsGroup" style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="color: var(--text-main); font-weight: 700; font-size: 0.88rem;">Options (Given On The Spot)</label>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" class="btn-fill-demo" id="btnPresetYesNo" style="font-size: 0.72rem; padding: 2px 8px; color: #2563eb; background: #eff6ff;">
+                Yes/No
+              </button>
+              <button type="button" class="btn-fill-demo" id="btnPresetAgree" style="font-size: 0.72rem; padding: 2px 8px; color: #2563eb; background: #eff6ff;">
+                Agree/Disagree
+              </button>
+              <button type="button" class="btn-fill-demo" id="btnClearSpotOptions" style="font-size: 0.72rem; padding: 2px 8px; color: #ef4444; background: #fef2f2;">
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px;" id="spotOptionsList">
+            <div class="spot-option-row" style="display: flex; gap: 8px; align-items: center;">
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); width: 22px;">1.</span>
+              <input type="text" class="title-input-field spot-opt-input" style="flex: 1;" placeholder="Enter option 1 on the spot..." value="">
+            </div>
+            <div class="spot-option-row" style="display: flex; gap: 8px; align-items: center;">
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); width: 22px;">2.</span>
+              <input type="text" class="title-input-field spot-opt-input" style="flex: 1;" placeholder="Enter option 2 on the spot..." value="">
+            </div>
+          </div>
+
+          <button type="button" class="btn-add-option-dashed" id="btnAddSpotOption" style="margin-top: 10px; width: 100%; justify-content: center;">
+            + Add Another Option
+          </button>
+        </div>
+
+        <!-- Descriptive Notice Box -->
+        <div id="spotDescriptiveNotice" style="display: none; padding: 14px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: var(--radius-md); margin-bottom: 16px;">
+          <strong style="color: #065f46; font-size: 0.88rem; display: block; margin-bottom: 4px;">📝 Descriptive Answer Model:</strong>
+          <span style="color: #047857; font-size: 0.82rem; line-height: 1.4; display: block;">
+            Each participant will receive a spacious text box to provide detailed, descriptive written responses. The host analytics will automatically extract top keywords, analyze word counts, and organize responses.
+          </span>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn-cancel" id="btnCancelSpot">Cancel</button>
+          <button type="button" class="btn-publish-purple" id="btnBroadcastSpot">
+            🚀 Broadcast Live to 200 Members
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Modal -->
+  <div class="modal-backdrop" id="qrModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Join Live Session - EasyPoll</h3>
+        <button class="modal-close-btn" id="btnCloseQrModal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+          Participants scan the QR code to vote instantly. <strong>200 member capacity. Zero login required. 100% Anonymous.</strong>
+        </p>
+
+        <div class="qr-display-box">
+          <div class="qr-canvas-holder" id="qrCodeContainer"></div>
+        </div>
+
+        <div class="share-link-input-group">
+          <input type="text" class="share-link-input" id="shareLinkInput" readonly>
+          <button class="btn-copy-link" id="btnCopyShareLink">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="copyLinkBtnText">Copy</span>
+          </button>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 14px;">
+          <a href="#" target="_blank" class="btn-action-outline" id="btnOpenParticipantTab" style="flex: 1; justify-content: center; text-decoration: none;">
+            🚀 Open As Participant
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unified Settings & Admin Credentials Modal -->
+  <div class="modal-backdrop" id="dbConfigModal">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="settingsModalTitle">Settings &amp; Security</h3>
+        <button class="modal-close-btn" id="btnCloseDbModal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Settings Segmented Tabs -->
+      <div style="display: flex; border-bottom: 1px solid var(--border-color); background: #f8fafc; padding: 0 16px;">
+        <button type="button" class="settings-tab-btn active" id="tabSettingsAdmin" style="padding: 12px 18px; font-weight: 700; font-size: 0.88rem; background: none; border: none; border-bottom: 2px solid var(--primary); color: var(--primary); cursor: pointer;">
+          🛡️ Admin Credentials
+        </button>
+        <button type="button" class="settings-tab-btn" id="tabSettingsDb" style="padding: 12px 18px; font-weight: 700; font-size: 0.88rem; background: none; border: none; border-bottom: 2px solid transparent; color: var(--text-muted); cursor: pointer;">
+          ⚙️ Database &amp; Capacity
+        </button>
+      </div>
+
+      <div class="modal-body" style="padding: 22px 24px;">
+
+        <!-- TAB 1: EDIT ADMIN USERNAME & PASSWORD (Old Password Required) -->
+        <div id="panelSettingsAdmin">
+          <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 18px; line-height: 1.45;">
+            Edit your Admin <strong>Username</strong> and <strong>Password</strong>. You must enter your <strong>Old Password</strong> to authorize and save changes.
+          </p>
+
+          <form id="formUpdateAdminCreds" autocomplete="off">
+            <!-- Current / Old Password Field -->
+            <div class="form-group-custom" style="margin-bottom: 14px;">
+              <label style="display: block; font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+                Current / Old Password <span style="color: #ef4444;">*</span>
+              </label>
+              <div style="position: relative;">
+                <input 
+                  type="password" 
+                  id="adminOldPasswordInput" 
+                  class="title-input-field" 
+                  style="width: 100%; padding-right: 40px;" 
+                  placeholder="Enter current password to verify" 
+                  required
+                >
+                <button type="button" class="input-inline-eye" onclick="window.toggleFieldPassword('adminOldPasswordInput')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 4px; font-size: 1rem;" title="Show/Hide Password">
+                  👁️
+                </button>
+              </div>
+            </div>
+
+            <!-- New Username Field -->
+            <div class="form-group-custom" style="margin-bottom: 14px;">
+              <label style="display: block; font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+                New Username
+              </label>
+              <input 
+                type="text" 
+                id="adminNewUsernameInput" 
+                class="title-input-field" 
+                style="width: 100%;" 
+                placeholder="Enter new admin username" 
+                required
+              >
+            </div>
+
+            <!-- New Password Field -->
+            <div class="form-group-custom" style="margin-bottom: 14px;">
+              <label style="display: block; font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+                New Password (minimum 6 characters)
+              </label>
+              <div style="position: relative;">
+                <input 
+                  type="password" 
+                  id="adminNewPasswordInput" 
+                  class="title-input-field" 
+                  style="width: 100%; padding-right: 40px;" 
+                  placeholder="Enter new password" 
+                  minlength="6"
+                  required
+                >
+                <button type="button" class="input-inline-eye" onclick="window.toggleFieldPassword('adminNewPasswordInput')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 4px; font-size: 1rem;" title="Show/Hide Password">
+                  👁️
+                </button>
+              </div>
+            </div>
+
+            <!-- Confirm New Password Field -->
+            <div class="form-group-custom" style="margin-bottom: 22px;">
+              <label style="display: block; font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+                Confirm New Password
+              </label>
+              <div style="position: relative;">
+                <input 
+                  type="password" 
+                  id="adminConfirmPasswordInput" 
+                  class="title-input-field" 
+                  style="width: 100%; padding-right: 40px;" 
+                  placeholder="Re-enter new password to confirm" 
+                  minlength="6"
+                  required
+                >
+                <button type="button" class="input-inline-eye" onclick="window.toggleFieldPassword('adminConfirmPasswordInput')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 4px; font-size: 1rem;" title="Show/Hide Password">
+                  👁️
+                </button>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+              <button type="button" class="btn-cancel" id="btnCancelAdminCreds">Cancel</button>
+              <button type="submit" class="btn-publish-purple" id="btnSaveAdminCreds">
+                💾 Update Credentials
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- TAB 2: DATABASE & CAPACITY -->
+        <div id="panelSettingsDb" style="display: none;">
+          <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 16px;">
+            Configure audience member capacity or connect your <strong>Supabase</strong> project for persistent cloud storage.
+          </p>
+
+          <div class="form-group-custom" style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+              Audience Capacity (Members)
+            </label>
+            <input type="number" id="audienceCapacityInput" class="title-input-field" style="width: 100%; margin-bottom: 14px;" value="200" min="10" max="1000">
+          </div>
+
+          <div class="form-group-custom" style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+              Supabase Project URL
+            </label>
+            <input type="text" id="supabaseUrlInput" class="title-input-field" style="width: 100%; margin-bottom: 14px;" placeholder="https://xyzcompany.supabase.co">
+          </div>
+
+          <div class="form-group-custom" style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+              Supabase Anon Key
+            </label>
+            <input type="password" id="supabaseKeyInput" class="title-input-field" style="width: 100%; margin-bottom: 14px;" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" class="btn-cancel" id="btnResetToLocal">Use Local Mode</button>
+            <button type="button" class="btn-publish-purple" id="btnSaveDbConfig">Save Database Config</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/host.js"></script>
+</body>
+</html>
